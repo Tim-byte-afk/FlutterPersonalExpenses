@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import './widgets/transaction-list.dart';
 import './widgets/new-transaction.dart';
 import './models/transaction.dart';
 import './widgets/chart.dart';
 
-void main() => runApp(App());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  runApp(App());
+}
 
 class App extends StatelessWidget {
   @override
@@ -90,21 +96,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final appBar = AppBar(
+      title: Text('Personal Expenses'),
+      actions: <Widget>[
+        IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => startAddNewTransaction(context))
+      ],
+    );
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Personal Expenses'),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () => startAddNewTransaction(context))
-        ],
-      ),
+      appBar: appBar,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Chart(_recentTransactions),
-          TransactionList(_userTransaction, _deleteTransaction)
+          Container(
+              height: (MediaQuery.of(context).size.height -
+                      appBar.preferredSize.height -
+                      MediaQuery.of(context).padding.top) *
+                  0.25,
+              child: Chart(_recentTransactions)),
+          Container(
+              height: (MediaQuery.of(context).size.height -
+                      appBar.preferredSize.height -
+                      MediaQuery.of(context).padding.top) *
+                  0.75,
+              child: TransactionList(_userTransaction, _deleteTransaction))
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
